@@ -28,8 +28,13 @@ async def listar_dispositivos(
     Raises:
         HTTPException: Em caso de erros de autenticação, rede ou API.
     """
+    # Normaliza o token — garante prefixo "Bearer"
+    normalized_token = token.strip()
+    if not normalized_token.lower().startswith("bearer "):
+        normalized_token = f"Bearer {normalized_token}"
+
     headers = {
-        "Authorization": token,
+        "Authorization": normalized_token,
         "Content-Type": "application/json",
     }
 
