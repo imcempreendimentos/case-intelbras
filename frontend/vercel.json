@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://case-intelbras-api.onrender.com/api/:path*"
+    }
+  ]
+}
