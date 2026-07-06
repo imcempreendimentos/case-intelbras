@@ -46,7 +46,7 @@ async def list_devices(
 
     # Extrai a lista de dispositivos da resposta da API Intelbras
     # Formato: {"status": "sucesso", "data": [...]}
-    dispositivos_raw = []
+    dispositivos_raw: list[dict] = []
 
     if isinstance(data, dict):
         dispositivos_raw = data.get("data") or data.get("dispositivos") or []
