@@ -56,20 +56,44 @@ export default function DeviceCard({ device, onClick }: DeviceCardProps) {
         </span>
       </div>
 
-      {/* Origin badge */}
-      {device.origem && (
-        <div className="mt-3 pt-3 border-t border-gray-100">
+      {/* Origin badge + extras */}
+      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2 flex-wrap">
+        {device.origem && (
           <span className="text-xs bg-primary-light/20 text-primary-dark px-2 py-0.5 rounded-full">
             {device.origem}
           </span>
-        </div>
-      )}
+        )}
+        {device.subdispositivo && (
+          <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+            subdispositivo
+          </span>
+        )}
+        {device.versao && (
+          <span className="text-xs text-medium-gray">
+            v{device.versao}
+          </span>
+        )}
+      </div>
     </button>
   );
 }
 
 function formatDate(dateStr: string): string {
   try {
+    // Formato Intelbras: "20260625T170134Z" → "2026-06-25T17:01:34Z"
+    if (/^\d{8}T\d{6}Z$/.test(dateStr)) {
+      const formatted = `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}T${dateStr.slice(9, 11)}:${dateStr.slice(11, 13)}:${dateStr.slice(13, 15)}Z`;
+      const date = new Date(formatted);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+    }
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
     return date.toLocaleString("pt-BR", {

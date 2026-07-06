@@ -1,26 +1,24 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
 
 
 class Device(BaseModel):
-    """Modelo de dispositivo retornado pela API Intelbras."""
+    """Modelo de um dispositivo da API Intelbras."""
 
-    id: Optional[str] = None
-    nome: Optional[str] = None
-    modelo: Optional[str] = None
-    serial: Optional[str] = None
-    mac: Optional[str] = None
-    firmware: Optional[str] = None
-    status: Optional[str] = None
-    online: Optional[bool] = None
-    origem: Optional[str] = None
-    ultima_vez_online: Optional[str] = None
-    categoria: Optional[str] = None
-    tipo: Optional[str] = None
-    ip: Optional[str] = None
-
-    class Config:
-        extra = "allow"
+    ns: str = ""
+    nome: str = ""
+    modelo: str = ""
+    status: str = ""
+    online: bool = False
+    versao: str = ""
+    origem: str = ""
+    subdispositivo: bool = False
+    id_produto: str = ""
+    ultima_vez_online: str = ""
+    dispositivo_pai: Optional[str] = None
+    id_produto_dispositivo_pai: Optional[str] = None
+    atualizacao_disponivel: bool = False
 
 
 class PaginationMeta(BaseModel):
@@ -39,8 +37,8 @@ class DeviceListResponse(BaseModel):
     paginacao: PaginationMeta
 
 
-class ErrorResponse(BaseModel):
-    """Resposta de erro padronizada."""
+class ApiErrorDetail(BaseModel):
+    """Detalhe de erro da API."""
 
     erro: str
     mensagem: str

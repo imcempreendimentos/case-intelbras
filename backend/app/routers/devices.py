@@ -25,7 +25,7 @@ async def list_devices(
 
     - Repassa o token Authorization para a API Intelbras.
     - Suporta filtragem por origem (vinculado/compartilhado).
-    - Suporta paginação.
+    - Suporta paginação via API Intelbras.
     """
     if not authorization:
         raise HTTPException(
@@ -44,63 +44,46 @@ async def list_devices(
         tamanho_pagina=tamanhoPagina,
     )
 
-    # Extrai a lista de dispositivos da resposta
+    # Extrai a lista de dispositivos da resposta da API Intelbras
+    # Formato: {"status": "sucesso", "data": [...]}
     dispositivos_raw = []
-    total_registros = 0
 
     if isinstance(data, dict):
-        # A API pode retornar em diferentes formatos
-        dispositivos_raw = (
-            data.get("dispositivos")
-            or data.get("dados")
-            or data.get("items")
-            or data.get("data")
-            or []
-        )
-        total_registros = (
-            data.get("totalRegistros")
-            or data.get("total")
-            or data.get("totalItems")
-            or len(dispositivos_raw)
-        )
+        dispositivos_raw = data.get("data") or data.get("dispositivos") or []
     elif isinstance(data, list):
         dispositivos_raw = data
-        total_registros = len(data)
 
     # Mapeia para o modelo Device
     dispositivos = []
     for d in dispositivos_raw:
         if isinstance(d, dict):
+            status = d.get("status", "offline")
             device = Device(
-                id=str(d.get("id", d.get("deviceId", ""))),
-                nome=d.get("nome", d.get("name", d.get("nomeDispositivo", ""))),
-                modelo=d.get("modelo", d.get("model", "")),
-                serial=d.get("serial", d.get("serialNumber", "")),
-                mac=d.get("mac", d.get("macAddress", "")),
-                firmware=d.get("firmware", d.get("versaoFirmware", "")),
-                status=d.get("status", ""),
-                online=d.get("online", d.get("isOnline", False)),
-                origem=d.get("origem", d.get("origin", "")),
-                ultima_vez_online=d.get(
-                    "ultimaVezOnline",
-                    d.get("lastOnline", d.get("ultima_vez_online", "")),
-                ),
-                categoria=d.get("categoria", d.get("category", "")),
-                tipo=d.get("tipo", d.get("type", "")),
-                ip=d.get("ip", d.get("ipAddress", "")),
+                ns=d.get("ns", ""),
+                nome=d.get("nome", ""),
+                modelo=d.get("modelo", ""),
+                status=status,
+                online=status.lower() == "online",
+                versao=d.get("versao", ""),
+                origem=d.get("origem", ""),
+                subdispositivo=d.get("subdispositivo", False),
+                id_produto=d.get("idProduto", ""),
+                ultima_vez_online=d.get("ultimaVezOnline", ""),
+                dispositivo_pai=d.get("dispositivoPai"),
+                id_produto_dispositivo_pai=d.get("idProdutoDispositivoPai"),
+                atualizacao_disponivel=d.get("atualizacaoDisponivel", False),
             )
             dispositivos.append(device)
 
-    # Filtragem por origem (backend-side)
+    # Filtragem por origem (backend-side, a API Intelbras não suporta nativamente)
     if origem and origem.lower() != "todos":
         dispositivos = [
             d
             for d in dispositivos
             if d.origem and d.origem.lower() == origem.lower()
         ]
-        total_registros = len(dispositivos)
 
-    # Calcula total de páginas
+    total_registros = len(dispositivos)
     total_paginas = max(1, (total_registros + tamanhoPagina - 1) // tamanhoPagina)
 
     return DeviceListResponse(

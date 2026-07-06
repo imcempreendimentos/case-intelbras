@@ -11,7 +11,7 @@ export default function DeviceList({ devices, onDeviceClick }: DeviceListProps) 
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {devices.map((device, index) => (
         <DeviceCard
-          key={device.id || index}
+          key={device.ns || index}
           device={device}
           onClick={() => onDeviceClick(device)}
         />

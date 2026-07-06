@@ -1,18 +1,17 @@
 export interface Device {
-  id: string;
+  ns: string;
   nome: string;
   modelo: string;
-  serial: string;
-  mac: string;
-  firmware: string;
   status: string;
   online: boolean;
+  versao: string;
   origem: string;
+  subdispositivo: boolean;
+  id_produto: string;
   ultima_vez_online: string;
-  categoria: string;
-  tipo: string;
-  ip: string;
-  [key: string]: unknown;
+  dispositivo_pai: string | null;
+  id_produto_dispositivo_pai: string | null;
+  atualizacao_disponivel: boolean;
 }
 
 export interface PaginationMeta {

@@ -61,7 +61,7 @@ export default function DeviceDrawer({ device, onClose }: DeviceDrawerProps) {
             <h3 className="text-xl font-bold text-dark-gray">
               {device.nome || "Dispositivo sem nome"}
             </h3>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
               <span
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold ${
                   isOnline
@@ -76,19 +76,28 @@ export default function DeviceDrawer({ device, onClose }: DeviceDrawerProps) {
                 />
                 {isOnline ? "Online" : "Offline"}
               </span>
+              {device.atualizacao_disponivel && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-50 text-yellow-700">
+                  ⬆ Atualização disponível
+                </span>
+              )}
             </div>
           </div>
 
           {/* Info grid */}
           <div className="space-y-4">
             <DetailRow label="Modelo" value={device.modelo} />
-            <DetailRow label="Serial" value={device.serial} />
-            <DetailRow label="MAC" value={device.mac} />
-            <DetailRow label="Firmware" value={device.firmware} />
-            <DetailRow label="IP" value={device.ip} />
-            <DetailRow label="Categoria" value={device.categoria} />
-            <DetailRow label="Tipo" value={device.tipo} />
+            <DetailRow label="Número de Série (NS)" value={device.ns} />
+            <DetailRow label="Versão de Firmware" value={device.versao} />
+            <DetailRow label="ID do Produto" value={device.id_produto} />
             <DetailRow label="Origem" value={device.origem} />
+            <DetailRow
+              label="Subdispositivo"
+              value={device.subdispositivo ? "Sim" : "Não"}
+            />
+            {device.dispositivo_pai && (
+              <DetailRow label="Dispositivo Pai" value={device.dispositivo_pai} />
+            )}
             <DetailRow
               label="Última vez online"
               value={
@@ -127,6 +136,21 @@ function DetailRow({
 
 function formatDate(dateStr: string): string {
   try {
+    // Formato Intelbras: "20260625T170134Z" → "2026-06-25T17:01:34Z"
+    if (/^\d{8}T\d{6}Z$/.test(dateStr)) {
+      const formatted = `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}T${dateStr.slice(9, 11)}:${dateStr.slice(11, 13)}:${dateStr.slice(13, 15)}Z`;
+      const date = new Date(formatted);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      }
+    }
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
     return date.toLocaleString("pt-BR", {
