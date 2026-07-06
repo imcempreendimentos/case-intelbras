@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://case-intelbras-api.onrender.com/api/:path*"
+      "destination": "https://backend-eta-taupe-82.vercel.app/api/:path*"
     }
   ]
 }
