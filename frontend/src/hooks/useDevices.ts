@@ -24,6 +24,7 @@ export function useDevices({
     enabled: !!token,
     retry: false,
     staleTime: 30_000,
+    refetchInterval: 30_000, // RF12: polling a cada 30s
   });
 }
 
