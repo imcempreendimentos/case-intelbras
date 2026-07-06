@@ -8,20 +8,20 @@ test.describe("Case Intelbras — Tela de Autenticação", () => {
   test("CT-01: Deve exibir tela de token ao acessar", async ({ page }) => {
     await page.goto(BASE_URL);
     await expect(page.getByRole("textbox")).toBeVisible();
-    await expect(page.getByRole("button", { name: /conectar/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /entrar/i })).toBeVisible();
     await expect(page.getByAltText("Intelbras")).toBeVisible();
   });
 
   test("CT-02: Deve exibir erro ao submeter campo vazio", async ({ page }) => {
     await page.goto(BASE_URL);
-    await page.getByRole("button", { name: /conectar/i }).click();
+    await page.getByRole("button", { name: /entrar/i }).click();
     await expect(page.getByText("Por favor, insira seu token de acesso.")).toBeVisible();
   });
 
   test("CT-03: Deve permanecer na tela de login com token inválido", async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByRole("textbox").fill(INVALID_TOKEN);
-    await page.getByRole("button", { name: /conectar/i }).click();
+    await page.getByRole("button", { name: /entrar/i }).click();
 
     // Deve mostrar erro na tela de token, NÃO na tela interna
     await expect(page.getByText(/token inválido/i)).toBeVisible({ timeout: 15000 });
@@ -34,7 +34,7 @@ test.describe("Case Intelbras — Listagem de Dispositivos (RF02)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByRole("textbox").fill(VALID_TOKEN);
-    await page.getByRole("button", { name: /conectar/i }).click();
+    await page.getByRole("button", { name: /entrar/i }).click();
     // Aguardar carregamento dos dispositivos
     await expect(page.getByText(/dispositivo\(s\)/i)).toBeVisible({ timeout: 15000 });
   });
@@ -62,7 +62,7 @@ test.describe("Case Intelbras — Filtros (RF03, RF07)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByRole("textbox").fill(VALID_TOKEN);
-    await page.getByRole("button", { name: /conectar/i }).click();
+    await page.getByRole("button", { name: /entrar/i }).click();
     await expect(page.getByText(/dispositivo\(s\)/i)).toBeVisible({ timeout: 15000 });
   });
 
@@ -102,7 +102,7 @@ test.describe("Case Intelbras — Detalhes do Dispositivo (RF06)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByRole("textbox").fill(VALID_TOKEN);
-    await page.getByRole("button", { name: /conectar/i }).click();
+    await page.getByRole("button", { name: /entrar/i }).click();
     await expect(page.getByText(/dispositivo\(s\)/i)).toBeVisible({ timeout: 15000 });
   });
 
@@ -137,14 +137,14 @@ test.describe("Case Intelbras — Header e Desconexão", () => {
   test("CT-14: Deve desconectar e voltar à tela de token", async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByRole("textbox").fill(VALID_TOKEN);
-    await page.getByRole("button", { name: /conectar/i }).click();
+    await page.getByRole("button", { name: /entrar/i }).click();
     await expect(page.getByText(/dispositivo\(s\)/i)).toBeVisible({ timeout: 15000 });
 
     // Clicar em sair
     await page.getByLabel(/sair/i).click();
 
     // Deve voltar à tela de token
-    await expect(page.getByRole("button", { name: /conectar/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /entrar/i })).toBeVisible();
     await expect(page.getByAltText("Intelbras")).toBeVisible();
   });
 });

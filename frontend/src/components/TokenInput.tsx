@@ -47,7 +47,7 @@ export default function TokenInput({
         {/* Card */}
         <div className="card p-8">
           <h2 className="text-xl font-bold text-dark-gray mb-2">
-            Conectar
+            Entrar
           </h2>
           <p className="text-medium-gray text-sm mb-6">
             Insira seu token de acesso gerado na plataforma Open Casa
@@ -130,7 +130,7 @@ export default function TokenInput({
                   Verificando token...
                 </>
               ) : (
-                "Conectar"
+                "Entrar"
               )}
             </button>
           </form>
