@@ -425,12 +425,15 @@
         }
 
         .services-list li {
+        .services-list li {
             background: var(--clean-gray);
             border-radius: var(--radius-card);
             padding: 16px;
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 4px;
+            text-align: center;
         }
 
         .service-name {
@@ -489,31 +492,6 @@
 
         .slide-end {
             background: linear-gradient(135deg, var(--white) 0%, #f0fdf6 100%);
-        }
-
-        /* Services list */
-        .services-list {
-            list-style: none;
-            padding: 0;
-            max-width: 700px;
-        }
-
-        .services-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .services-list li:last-child {
-            border-bottom: none;
-        }
-
-        .service-name {
-            font-weight: 700;
-            color: var(--primary-dark);
-            min-width: 120px;
         }
 
         /* URL display */
