@@ -54,7 +54,7 @@ export default function App() {
   // Pagination
   const [pagina, setPagina] = useState(1);
   const itensPorPagina = 6; // items per page (local pagination)
-  const tamanhoPagina = 100; // fetch all from API
+  const tamanhoPagina = 50; // fetch all from API (max accepted by Intelbras)
 
   // Drawer
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
