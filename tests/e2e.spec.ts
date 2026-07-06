@@ -25,8 +25,8 @@ test.describe("Case Intelbras — Tela de Autenticação", () => {
 
     // Deve mostrar erro na tela de token, NÃO na tela interna
     await expect(page.getByText(/token inválido/i)).toBeVisible({ timeout: 15000 });
-    // Não deve mostrar o header com "Desconectar"
-    await expect(page.getByRole("button", { name: /desconectar/i })).not.toBeVisible();
+    // Não deve mostrar o header com "Sair"
+    await expect(page.getByRole("button", { name: /sair/i })).not.toBeVisible();
   });
 });
 
@@ -140,8 +140,8 @@ test.describe("Case Intelbras — Header e Desconexão", () => {
     await page.getByRole("button", { name: /conectar/i }).click();
     await expect(page.getByText(/dispositivo\(s\)/i)).toBeVisible({ timeout: 15000 });
 
-    // Clicar em desconectar
-    await page.getByLabel(/desconectar/i).click();
+    // Clicar em sair
+    await page.getByLabel(/sair/i).click();
 
     // Deve voltar à tela de token
     await expect(page.getByRole("button", { name: /conectar/i })).toBeVisible();
