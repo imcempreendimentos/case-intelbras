@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const BASE_URL = "https://frontend-xi-livid-19.vercel.app";
-const VALID_TOKEN = "Ot_0001or53b0b90299ae4fea98a9493ec3";
+const BASE_URL = process.env.TEST_BASE_URL || "https://frontend-xi-livid-19.vercel.app";
+const VALID_TOKEN = process.env.TEST_VALID_TOKEN || "";
 const INVALID_TOKEN = "token_invalido_123";
 
 test.describe("Case Intelbras — Tela de Autenticação", () => {
