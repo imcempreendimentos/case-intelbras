@@ -3,8 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import Header from "./components/Header";
 import TokenInput from "./components/TokenInput";
 import FilterBar from "./components/FilterBar";
+import type { ViewMode } from "./components/FilterBar";
 import DashboardSummary from "./components/DashboardSummary";
 import DeviceList from "./components/DeviceList";
+import DeviceListView from "./components/DeviceListView";
 import DeviceDrawer from "./components/DeviceDrawer";
 import Pagination from "./components/Pagination";
 import LoadingState from "./components/LoadingState";
@@ -44,13 +46,15 @@ export default function App() {
   );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [filterUpdatesOnly, setFilterUpdatesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   // Favorites (RF13)
   const { isFavorite, toggleFavorite } = useFavorites();
 
   // Pagination
   const [pagina, setPagina] = useState(1);
-  const tamanhoPagina = 10;
+  const itensPorPagina = 6; // items per page (local pagination)
+  const tamanhoPagina = 100; // fetch all from API
 
   // Drawer
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
@@ -181,6 +185,17 @@ export default function App() {
     isFavorite,
   ]);
 
+  // Local pagination
+  const totalPaginasLocal = useMemo(
+    () => Math.max(1, Math.ceil(filteredDevices.length / itensPorPagina)),
+    [filteredDevices.length, itensPorPagina]
+  );
+
+  const paginatedDevices = useMemo(() => {
+    const start = (pagina - 1) * itensPorPagina;
+    return filteredDevices.slice(start, start + itensPorPagina);
+  }, [filteredDevices, pagina, itensPorPagina]);
+
   // Handlers
   const handleConnect = useCallback(async (inputToken: string) => {
     setIsValidating(true);
@@ -236,15 +251,6 @@ export default function App() {
       setOrigem(value);
       setPagina(1);
       updatePreference("origem", value);
-    },
-    [updatePreference]
-  );
-
-  const handleStatusFilterChange = useCallback(
-    (value: StatusFilter) => {
-      setStatusFilter(value);
-      setFilterUpdatesOnly(false);
-      updatePreference("statusFilter", value);
     },
     [updatePreference]
   );
@@ -342,13 +348,13 @@ export default function App() {
           onSearchChange={setSearch}
           origem={origem}
           onOrigemChange={handleOrigemChange}
-          statusFilter={statusFilter}
-          onStatusFilterChange={handleStatusFilterChange}
           sortOption={sortOption}
           onSortChange={handleSortChange}
           showFavoritesOnly={showFavoritesOnly}
           onToggleFavorites={handleToggleFavorites}
           onExportCSV={handleExportCSV}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
 
         {/* Content */}
@@ -368,10 +374,10 @@ export default function App() {
             {/* Results count + RF12 indicators */}
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <p className="text-sm text-medium-gray">
-                {data?.paginacao.total_registros ?? 0} dispositivo(s)
+                {filteredDevices.length} dispositivo(s)
                 encontrado(s)
-                {search && ` • ${filteredDevices.length} com filtro local`}
-                {filterUpdatesOnly && " • Filtro: atualizações pendentes"}
+                {search && " • filtro por busca ativo"}
+                {filterUpdatesOnly && " • filtro: atualizações pendentes"}
               </p>
 
               {/* RF12: Last updated indicator + refresh button */}
@@ -404,16 +410,25 @@ export default function App() {
               </div>
             </div>
 
-            <DeviceList
-              devices={filteredDevices}
-              onDeviceClick={setSelectedDevice}
-              isFavorite={isFavorite}
-              onToggleFavorite={toggleFavorite}
-            />
+            {viewMode === "grid" ? (
+              <DeviceList
+                devices={paginatedDevices}
+                onDeviceClick={setSelectedDevice}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+              />
+            ) : (
+              <DeviceListView
+                devices={paginatedDevices}
+                onDeviceClick={setSelectedDevice}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+              />
+            )}
 
             <Pagination
               pagina={pagina}
-              totalPaginas={data?.paginacao.total_paginas ?? 1}
+              totalPaginas={totalPaginasLocal}
               onPageChange={handlePageChange}
             />
           </>

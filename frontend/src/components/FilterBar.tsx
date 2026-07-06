@@ -1,18 +1,20 @@
-import type { OrigemFilter, StatusFilter } from "../types/device";
+import type { OrigemFilter } from "../types/device";
 import type { SortOption } from "../hooks/usePreferences";
+
+export type ViewMode = "grid" | "list";
 
 interface FilterBarProps {
   search: string;
   onSearchChange: (value: string) => void;
   origem: OrigemFilter;
   onOrigemChange: (value: OrigemFilter) => void;
-  statusFilter: StatusFilter;
-  onStatusFilterChange: (value: StatusFilter) => void;
   sortOption: SortOption;
   onSortChange: (value: SortOption) => void;
   showFavoritesOnly: boolean;
   onToggleFavorites: () => void;
   onExportCSV: () => void;
+  viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
 }
 
 export default function FilterBar({
@@ -20,13 +22,13 @@ export default function FilterBar({
   onSearchChange,
   origem,
   onOrigemChange,
-  statusFilter,
-  onStatusFilterChange,
   sortOption,
   onSortChange,
   showFavoritesOnly,
   onToggleFavorites,
   onExportCSV,
+  viewMode,
+  onViewModeChange,
 }: FilterBarProps) {
   return (
     <div className="flex flex-col gap-3 mb-6">
@@ -58,6 +60,38 @@ export default function FilterBar({
               aria-label="Buscar dispositivos"
             />
           </div>
+        </div>
+
+        {/* View mode toggle */}
+        <div className="inline-flex rounded-card border border-light-gray overflow-hidden">
+          <button
+            onClick={() => onViewModeChange("grid")}
+            className={`p-2 transition-colors ${
+              viewMode === "grid"
+                ? "bg-primary text-white"
+                : "text-medium-gray hover:bg-gray-50"
+            }`}
+            aria-label="Visualização em grade"
+            aria-pressed={viewMode === "grid"}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => onViewModeChange("list")}
+            className={`p-2 transition-colors ${
+              viewMode === "list"
+                ? "bg-primary text-white"
+                : "text-medium-gray hover:bg-gray-50"
+            }`}
+            aria-label="Visualização em lista"
+            aria-pressed={viewMode === "list"}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
 
         {/* Favorites toggle */}
@@ -109,7 +143,7 @@ export default function FilterBar({
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          Exportar CSV
+          CSV
         </button>
       </div>
 
@@ -125,20 +159,6 @@ export default function FilterBar({
           <option value="todos">Todas as origens</option>
           <option value="vinculado">Vinculados</option>
           <option value="compartilhado">Compartilhados</option>
-        </select>
-
-        {/* Status filter */}
-        <select
-          value={statusFilter}
-          onChange={(e) =>
-            onStatusFilterChange(e.target.value as StatusFilter)
-          }
-          className="input-field sm:w-40"
-          aria-label="Filtrar por status"
-        >
-          <option value="todos">Todos os status</option>
-          <option value="online">Online</option>
-          <option value="offline">Offline</option>
         </select>
 
         {/* Sort (RF09) */}
