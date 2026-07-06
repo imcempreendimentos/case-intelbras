@@ -305,26 +305,26 @@ export default function App() {
     return `há ${minutes}min`;
   };
 
-  // Login screen
+  // Auth expired — if polling detects 401/403, force logout
+  const isAuthError =
+    error?.response?.status === 401 || error?.response?.status === 403;
+
+  if (isAuthError && isAuthenticated) {
+    // Clear auth state to stop polling
+    sessionStorage.removeItem("intelbras_token");
+    setToken("");
+    setIsAuthenticated(false);
+    queryClient.clear();
+    if (!authError) {
+      setAuthError("Seu token expirou. Insira um novo token para continuar.");
+    }
+  }
+
   if (!isAuthenticated) {
     return (
       <TokenInput
         onConnect={handleConnect}
         errorMessage={authError}
-        isLoading={isValidating}
-      />
-    );
-  }
-
-  // Auth expired
-  const isAuthError =
-    error?.response?.status === 401 || error?.response?.status === 403;
-
-  if (isAuthError) {
-    return (
-      <TokenInput
-        onConnect={handleConnect}
-        errorMessage="Seu token expirou. Insira um novo token para continuar."
         isLoading={isValidating}
       />
     );
