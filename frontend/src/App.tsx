@@ -64,9 +64,10 @@ export default function App() {
   const [secondsAgo, setSecondsAgo] = useState(0);
 
   // Fetch devices (RF12: polling via refetchInterval in hook)
+  // Fetch devices — always page 1 from API, pagination is local
   const { data, isLoading, isFetching, error, refetch, dataUpdatedAt } = useDevices({
     token: isAuthenticated ? token : "",
-    pagina,
+    pagina: 1,
     tamanhoPagina,
     origem,
   });
