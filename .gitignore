@@ -17,3 +17,9 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Vercel
+.vercel/
+
+# Logs
+*.log
