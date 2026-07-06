@@ -12,7 +12,6 @@ import Pagination from "./components/Pagination";
 import LoadingState from "./components/LoadingState";
 import EmptyState from "./components/EmptyState";
 import ErrorState from "./components/ErrorState";
-import Footer from "./components/Footer";
 import { useDevices, getErrorMessage } from "./hooks/useDevices";
 import { usePreferences } from "./hooks/usePreferences";
 import { useFavorites } from "./hooks/useFavorites";
@@ -436,8 +435,6 @@ export default function App() {
           </>
         )}
       </main>
-
-      <Footer />
 
       {/* Device Detail Drawer */}
       <DeviceDrawer
