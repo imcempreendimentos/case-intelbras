@@ -15,10 +15,15 @@ import type { Device, OrigemFilter, StatusFilter } from "./types/device";
 export default function App() {
   const queryClient = useQueryClient();
 
-  // Auth state
+  // Auth state — token só é "confirmado" após validação com sucesso
   const [token, setToken] = useState<string>(
     () => sessionStorage.getItem("intelbras_token") || ""
   );
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    () => !!sessionStorage.getItem("intelbras_token")
+  );
+  const [isValidating, setIsValidating] = useState(false);
+  const [authError, setAuthError] = useState("");
 
   // Filters
   const [search, setSearch] = useState("");
@@ -32,9 +37,9 @@ export default function App() {
   // Drawer
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
 
-  // Fetch devices
+  // Fetch devices (só quando autenticado)
   const { data, isLoading, error, refetch } = useDevices({
-    token,
+    token: isAuthenticated ? token : "",
     pagina,
     tamanhoPagina,
     origem,
@@ -68,10 +73,39 @@ export default function App() {
 
   // Handlers
   const handleConnect = useCallback(
-    (newToken: string) => {
-      sessionStorage.setItem("intelbras_token", newToken);
-      setToken(newToken);
-      setPagina(1);
+    async (inputToken: string) => {
+      setIsValidating(true);
+      setAuthError("");
+
+      try {
+        const response = await fetch("/api/devices?pagina=1&tamanhoPagina=1", {
+          method: "POST",
+          headers: {
+            Authorization: inputToken,
+          },
+        });
+
+        if (response.ok) {
+          // Token válido — navegar para tela interna
+          sessionStorage.setItem("intelbras_token", inputToken);
+          setToken(inputToken);
+          setIsAuthenticated(true);
+          setPagina(1);
+        } else {
+          const data = await response.json().catch(() => null);
+          const mensagem =
+            data?.detail?.mensagem ||
+            data?.mensagem ||
+            "Token inválido ou expirado. Verifique suas credenciais.";
+          setAuthError(mensagem);
+        }
+      } catch {
+        setAuthError(
+          "Não foi possível conectar ao servidor. Verifique sua conexão."
+        );
+      } finally {
+        setIsValidating(false);
+      }
     },
     []
   );
@@ -79,11 +113,13 @@ export default function App() {
   const handleDisconnect = useCallback(() => {
     sessionStorage.removeItem("intelbras_token");
     setToken("");
+    setIsAuthenticated(false);
     setSearch("");
     setOrigem("todos");
     setStatusFilter("todos");
     setPagina(1);
     setSelectedDevice(null);
+    setAuthError("");
     queryClient.clear();
   }, [queryClient]);
 
@@ -97,20 +133,27 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // If no token, show login
-  if (!token) {
-    return <TokenInput onConnect={handleConnect} />;
+  // Se não autenticado, mostrar tela de login
+  if (!isAuthenticated) {
+    return (
+      <TokenInput
+        onConnect={handleConnect}
+        errorMessage={authError}
+        isLoading={isValidating}
+      />
+    );
   }
 
+  // Se erro de auth na tela interna (token expirou durante uso), volta pro login
   const isAuthError =
     error?.response?.status === 401 || error?.response?.status === 403;
 
-  // Se erro de autenticação, volta pra tela de token com mensagem
   if (isAuthError) {
     return (
       <TokenInput
         onConnect={handleConnect}
-        errorMessage={getErrorMessage(error)}
+        errorMessage="Seu token expirou. Insira um novo token para continuar."
+        isLoading={isValidating}
       />
     );
   }
@@ -133,12 +176,10 @@ export default function App() {
         {/* Content */}
         {isLoading && <LoadingState />}
 
-        {error && (
+        {error && !isAuthError && (
           <ErrorState
             message={getErrorMessage(error)}
             onRetry={() => refetch()}
-            onDisconnect={handleDisconnect}
-            isAuthError={isAuthError}
           />
         )}
 
