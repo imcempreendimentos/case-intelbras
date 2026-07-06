@@ -40,7 +40,7 @@ export default function TokenInput({
             className="h-10 mx-auto"
           />
           <p className="text-medium-gray mt-3 text-sm">
-            Gerenciador de Dispositivos — Casa Inteligente
+            Gerenciador de Dispositivos | Casa Inteligente
           </p>
         </div>
 

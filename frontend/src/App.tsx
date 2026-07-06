@@ -35,7 +35,7 @@ export default function App() {
   // Preferences (RF17)
   const { preferences, updatePreference } = usePreferences();
 
-  // Filters — initialized from preferences
+  // Filters (initialized from preferences)
   const [search, setSearch] = useState("");
   const [origem, setOrigem] = useState<OrigemFilter>(preferences.origem);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(
@@ -64,7 +64,7 @@ export default function App() {
   const [secondsAgo, setSecondsAgo] = useState(0);
 
   // Fetch devices (RF12: polling via refetchInterval in hook)
-  // Fetch devices — always page 1 from API, pagination is local
+  // Fetch devices: always page 1 from API, pagination is local
   const { data, isLoading, isFetching, error, refetch, dataUpdatedAt } = useDevices({
     token: isAuthenticated ? token : "",
     pagina: 1,
@@ -304,7 +304,7 @@ export default function App() {
     return `há ${minutes}min`;
   };
 
-  // Auth expired — if polling detects 401/403, force logout
+  // Auth expired: if polling detects 401/403, force logout
   const isAuthError =
     error?.response?.status === 401 || error?.response?.status === 403;
 
@@ -334,7 +334,7 @@ export default function App() {
       <Header onDisconnect={handleDisconnect} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Dashboard Summary (RF16) — above filters */}
+        {/* Dashboard Summary (RF16) */}
         {data?.dispositivos && data.dispositivos.length > 0 && (
           <DashboardSummary
             devices={data.dispositivos}

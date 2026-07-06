@@ -118,7 +118,7 @@ export default function DeviceListView({
 }
 
 function formatDate(dateStr: string): string {
-  if (!dateStr) return "—";
+  if (!dateStr) return "-";
   try {
     if (/^\d{8}T\d{6}Z$/.test(dateStr)) {
       const formatted = `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}T${dateStr.slice(9, 11)}:${dateStr.slice(11, 13)}:${dateStr.slice(13, 15)}Z`;
