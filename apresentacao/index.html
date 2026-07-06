@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Tecnico - Gerenciador de Dispositivos IoT | Israel Consoli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00B26B;
+            --primary-dark: #00852b;
+            --primary-light: #74f29f;
+            --dark-gray: #2b2b2b;
+            --medium-gray: #5e6573;
+            --clean-gray: #f5f5f5;
+            --white: #ffffff;
+            --success: #01e675;
+            --warning: #eabe0f;
+            --error: #f54336;
+            --radius-card: 8px;
+            --radius-badge: 50px;
+            --shadow: 0px 2px 4px rgba(214,214,214,.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito Sans', 'Inter', sans-serif;
+            background: var(--dark-gray);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+            background: var(--white);
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        .slide.prev {
+            transform: translateX(-30px);
+        }
+
+        h1 {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--dark-gray);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        h2 {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        h3 {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--medium-gray);
+            margin-bottom: 12px;
+        }
+
+        p, li {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            line-height: 1.7;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--medium-gray);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .accent {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: var(--radius-badge);
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-outline {
+            display: inline-block;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: var(--radius-badge);
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            height: 48px;
+            margin-bottom: 24px;
+        }
+
+        .logo-small {
+            height: 36px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            border-radius: var(--radius-badge);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav button {
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .nav .counter {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+            font-weight: 500;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Quote box */
+        .quote-box {
+            background: var(--clean-gray);
+            border-left: 4px solid var(--primary);
+            padding: 20px 24px;
+            border-radius: 0 var(--radius-card) var(--radius-card) 0;
+            margin-top: 20px;
+            max-width: 800px;
+        }
+
+        .quote-box p {
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--dark-gray);
+        }
+
+        /* Bar chart styles */
+        .bar-chart {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .bar-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+            width: 130px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 32px;
+            background: var(--clean-gray);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--white);
+            font-weight: 600;
+            transition: width 0.8s ease;
+        }
+
+        .bar-value {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--medium-gray);
+            width: 60px;
+            font-weight: 600;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checklist li::before {
+            content: '';
+            display: none;
+        }
+
+        .check-icon {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            max-width: 700px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid var(--white);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .timeline-item h3 {
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .timeline-item p {
+            font-size: 0.95rem;
+        }
+
+        /* Architecture diagram */
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .arch-box {
+            background: var(--white);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-card);
+            padding: 12px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            text-align: center;
+        }
+
+        .arch-arrow {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Analogy cards */
+        .analogy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .analogy-card {
+            background: var(--clean-gray);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .analogy-card .emoji {
+            font-size: 1.8rem;
+        }
+
+        .analogy-card strong {
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .analogy-card p {
+            font-size: 0.95rem;
+        }
+
+        /* Slide-specific backgrounds */
+        .slide-cover {
+            background: linear-gradient(135deg, var(--white) 0%, #f0fdf6 100%);
+        }
+
+        .slide-cover::after {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0,178,107,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .slide-end {
+            background: linear-gradient(135deg, var(--white) 0%, #f0fdf6 100%);
+        }
+
+        /* Services list */
+        .services-list {
+            list-style: none;
+            padding: 0;
+            max-width: 700px;
+        }
+
+        .services-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+
+        .service-name {
+            font-weight: 700;
+            color: var(--primary-dark);
+            min-width: 120px;
+        }
+
+        /* URL display */
+        .url-display {
+            background: var(--dark-gray);
+            color: var(--success);
+            font-family: 'Inter', monospace;
+            padding: 16px 32px;
+            border-radius: var(--radius-card);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 20px 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* Number cards */
+        .number-card {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .number-card .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .number-card .label {
+            font-size: 1rem;
+            color: var(--medium-gray);
+            font-weight: 500;
+        }
+
+        .icon-circle {
+            width: 56px;
+            height: 56px;
+            background: rgba(0,178,107,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.5rem;
+        }
+
+        .content-wrapper {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .text-center { text-align: center; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-16 { margin-bottom: 16px; }
+        .mb-24 { margin-bottom: 24px; }
+        .mb-32 { margin-bottom: 32px; }
+        .mt-16 { margin-top: 16px; }
+        .mt-24 { margin-top: 24px; }
+    </style>
+</head>
+<body>
+<div class="presentation">
+
+    <!-- Slide 1: Capa -->
+    <section class="slide slide-cover active">
+        <img src="../frontend/public/logo-intelbras.png" alt="Intelbras" class="logo">
+        <h1>Case Tecnico: Gerenciador de Dispositivos IoT</h1>
+        <p class="subtitle mb-8">Israel Consoli</p>
+        <p class="subtitle mb-8">Analista de Desenvolvimento de Produto II</p>
+        <p class="subtitle" style="color: var(--primary); font-weight: 600;">Julho 2026</p>
+    </section>
+
+    <!-- Slide 2: Agenda -->
+    <section class="slide">
+        <h2>Agenda</h2>
+        <div class="content-wrapper">
+            <div style="display:flex; flex-direction:column; gap:12px; max-width:700px; margin:0 auto;">
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; color:var(--dark-gray);">1. Contexto e Stack</span>
+                    <span class="badge">3 min</span>
+                </div>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; color:var(--dark-gray);">2. Visao de Produto</span>
+                    <span class="badge">12 min</span>
+                </div>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; color:var(--dark-gray);">3. Arquitetura Cloud</span>
+                    <span class="badge">8 min</span>
+                </div>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; color:var(--dark-gray);">4. Demo + Codigo</span>
+                    <span class="badge">12 min</span>
+                </div>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; color:var(--dark-gray);">5. Gestao de Squad</span>
+                    <span class="badge">5 min</span>
+                </div>
+            </div>
+            <p class="text-center mt-24" style="font-size:1.2rem;"><span class="accent">Total: 40 minutos</span></p>
+        </div>
+    </section>
+
+    <!-- Slide 3: O Desafio -->
+    <section class="slide">
+        <h2>O Desafio</h2>
+        <div class="content-wrapper" style="max-width:750px;">
+            <p class="mb-24 text-center" style="font-size:1.15rem;">O que foi pedido neste case:</p>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div class="card" style="display:flex; align-items:center; gap:16px;">
+                    <span style="font-size:1.5rem;">1</span>
+                    <p style="font-size:1.1rem; color:var(--dark-gray);">Construir uma aplicacao que consome a API Casa Inteligente</p>
+                </div>
+                <div class="card" style="display:flex; align-items:center; gap:16px;">
+                    <span style="font-size:1.5rem;">2</span>
+                    <p style="font-size:1.1rem; color:var(--dark-gray);">Documentar decisoes de produto e arquitetura</p>
+                </div>
+                <div class="card" style="display:flex; align-items:center; gap:16px;">
+                    <span style="font-size:1.5rem;">3</span>
+                    <p style="font-size:1.1rem; color:var(--dark-gray);">Demonstrar como eu penso, priorizo e comunico</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Stack Escolhida -->
+    <section class="slide">
+        <h2>Stack Escolhida</h2>
+        <div class="grid-2 mb-32">
+            <div class="card text-center">
+                <div class="icon-circle">&#128421;</div>
+                <h3>Backend</h3>
+                <p class="accent" style="font-size:1.2rem; margin-bottom:4px;">Python FastAPI</p>
+            </div>
+            <div class="card text-center">
+                <div class="icon-circle">&#127912;</div>
+                <h3>Frontend</h3>
+                <p class="accent" style="font-size:1.2rem; margin-bottom:4px;">React TypeScript</p>
+            </div>
+        </div>
+        <div class="content-wrapper" style="max-width:800px;">
+            <h3 class="text-center mb-16">Por que essa escolha?</h3>
+            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;">
+                <li style="padding:8px 0;">&#9889; <strong>FastAPI:</strong> async, tipado, gera documentacao automaticamente</li>
+                <li style="padding:8px 0;">&#9889; <strong>React + TS:</strong> componentes reutilizaveis, tipagem que previne bugs</li>
+                <li style="padding:8px 0;">&#9889; <strong>Tailwind:</strong> produtividade alta, fiel ao design system Intelbras</li>
+            </ul>
+            <div class="flex-center mt-24">
+                <span class="badge-outline">GitHub &#9733;&#9733;&#9733;</span>
+                <span class="badge-outline">Python &#9733;&#9733;</span>
+                <span class="badge-outline">TypeScript &#9733;&#9733;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Visao de Produto - Requisitos -->
+    <section class="slide">
+        <h2>18 Requisitos Funcionais, organizados por valor</h2>
+        <div class="bar-chart mb-32">
+            <div class="bar-row">
+                <span class="bar-label">Must Have</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:100%; background:var(--primary);">8</div>
+                </div>
+                <span class="bar-value">8</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">Should Have</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:50%; background:var(--primary); opacity:0.75;">4</div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">Could Have</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:50%; background:var(--primary-light);">4</div>
+                </div>
+                <span class="bar-value">4</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">Won't Have</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:12.5%; background:var(--medium-gray);">1</div>
+                </div>
+                <span class="bar-value">1</span>
+            </div>
+        </div>
+        <div class="flex-center mb-16">
+            <span class="badge" style="font-size:1rem; padding:10px 24px;">Total implementado: 15 de 18</span>
+        </div>
+        <p class="text-center" style="max-width:600px;">Priorizei pelo valor para o usuario final e viabilidade tecnica</p>
+    </section>
+
+    <!-- Slide 6: Como priorizei -->
+    <section class="slide">
+        <h2>Como priorizei</h2>
+        <div class="content-wrapper" style="max-width:800px;">
+            <h3 class="mb-16">Meu processo de decisao:</h3>
+            <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
+                <div class="card" style="display:flex; align-items:flex-start; gap:16px;">
+                    <span class="badge" style="min-width:32px; text-align:center;">1</span>
+                    <p style="color:var(--dark-gray);">Entregar o minimo funcional (RF01 a RF05) para validar a integracao</p>
+                </div>
+                <div class="card" style="display:flex; align-items:flex-start; gap:16px;">
+                    <span class="badge" style="min-width:32px; text-align:center;">2</span>
+                    <p style="color:var(--dark-gray);">Adicionar o que diferencia na demo (dashboard, favoritos, CSV)</p>
+                </div>
+                <div class="card" style="display:flex; align-items:flex-start; gap:16px;">
+                    <span class="badge" style="min-width:32px; text-align:center;">3</span>
+                    <p style="color:var(--dark-gray);">Documentar o que nao cabe agora com justificativa (stream ao vivo)</p>
+                </div>
+            </div>
+            <div class="quote-box">
+                <p>"Decidi nao implementar streaming de cameras porque a API disponivel so lista metadados. Documentei como RF futuro dependente de integracao com o SDK Mibo."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Requisitos Nao Funcionais -->
+    <section class="slide">
+        <h2>Requisitos Nao Funcionais</h2>
+        <p class="subtitle mb-32">27 requisitos em 7 categorias</p>
+        <div class="content-wrapper">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:16px;">
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">4</p>
+                    <p style="font-size:0.9rem;">Performance</p>
+                </div>
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">5</p>
+                    <p style="font-size:0.9rem;">Seguranca</p>
+                </div>
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">5</p>
+                    <p style="font-size:0.9rem;">Usabilidade</p>
+                </div>
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">3</p>
+                    <p style="font-size:0.9rem;">Confiabilidade</p>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">4</p>
+                    <p style="font-size:0.9rem;">Manutenibilidade</p>
+                </div>
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">3</p>
+                    <p style="font-size:0.9rem;">Compatibilidade</p>
+                </div>
+                <div class="card text-center">
+                    <p class="accent" style="font-size:1.8rem; font-weight:800;">3</p>
+                    <p style="font-size:0.9rem;">Observabilidade</p>
+                </div>
+            </div>
+        </div>
+        <p class="text-center mt-24" style="max-width:600px;">Cada um com metrica mensuravel, nao apenas texto generico</p>
+    </section>
+
+    <!-- Slide 8: Arquitetura Cloud - O Conceito -->
+    <section class="slide">
+        <h2>Se 50 mil pessoas usassem ao mesmo tempo</h2>
+        <p class="subtitle mb-32">Imagine a aplicacao como um restaurante:</p>
+        <div class="analogy-grid">
+            <div class="analogy-card">
+                <span class="emoji">&#127970;</span>
+                <div>
+                    <strong>CloudFront</strong>
+                    <p>A fachada que recebe todo mundo</p>
+                </div>
+            </div>
+            <div class="analogy-card">
+                <span class="emoji">&#129499;</span>
+                <div>
+                    <strong>Lambda</strong>
+                    <p>Cozinheiros que aparecem so quando tem pedido</p>
+                </div>
+            </div>
+            <div class="analogy-card">
+                <span class="emoji">&#127860;</span>
+                <div>
+                    <strong>Redis</strong>
+                    <p>Bancada onde ficam os pratos prontos para servir rapido</p>
+                </div>
+            </div>
+            <div class="analogy-card">
+                <span class="emoji">&#128666;</span>
+                <div>
+                    <strong>API Intelbras</strong>
+                    <p>O fornecedor la fora</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Arquitetura Cloud - Componentes -->
+    <section class="slide">
+        <h2>Arquitetura Cloud</h2>
+        <div class="content-wrapper">
+            <div class="arch-flow mb-32">
+                <div class="arch-box">Usuario</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-box">CloudFront/S3</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-box">API Gateway</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-box">Lambda</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-box">Redis Cache</div>
+                <span class="arch-arrow">&#8594;</span>
+                <div class="arch-box">API Intelbras</div>
+            </div>
+            <ul class="services-list">
+                <li>
+                    <span class="service-name">WAF</span>
+                    <span>Firewall que bloqueia ataques automaticamente</span>
+                </li>
+                <li>
+                    <span class="service-name">X-Ray</span>
+                    <span>Rastreia cada requisicao de ponta a ponta</span>
+                </li>
+                <li>
+                    <span class="service-name">CloudWatch</span>
+                    <span>Alerta a equipe se algo quebrar</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Slide 10: Arquitetura Cloud - Custo -->
+    <section class="slide">
+        <h2>Quanto custa manter isso rodando?</h2>
+        <div class="bar-chart mb-24">
+            <div class="bar-row">
+                <span class="bar-label">Lambda</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:54%; background:var(--primary);">$50</div>
+                </div>
+                <span class="bar-value">$50</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">CloudFront</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:32%; background:var(--primary); opacity:0.85;">$30</div>
+                </div>
+                <span class="bar-value">$30</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">ElastiCache</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:27%; background:var(--primary); opacity:0.7;">$25</div>
+                </div>
+                <span class="bar-value">$25</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">API Gateway</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:16%; background:var(--primary-light);">$15</div>
+                </div>
+                <span class="bar-value">$15</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">DynamoDB</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:16%; background:var(--primary-light);">$15</div>
+                </div>
+                <span class="bar-value">$15</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">Outros</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:54%; background:var(--medium-gray);">$50</div>
+                </div>
+                <span class="bar-value">$50</span>
+            </div>
+        </div>
+        <div class="flex-center mb-16">
+            <span class="badge" style="font-size:1.1rem; padding:12px 28px; background:var(--primary-dark);">Total: ~$185/mes</span>
+        </div>
+        <p class="text-center" style="max-width:600px;">Comeca barato e escala conforme a demanda cresce. Zero custo quando ninguem usa.</p>
+    </section>
+
+    <!-- Slide 11: Demo ao Vivo -->
+    <section class="slide">
+        <h2>Vamos ver funcionando</h2>
+        <div class="content-wrapper" style="max-width:700px;">
+            <ul class="checklist mb-32">
+                <li><span class="check-icon">&#10003;</span> Login com token (erro + sucesso)</li>
+                <li><span class="check-icon">&#10003;</span> Dashboard de metricas</li>
+                <li><span class="check-icon">&#10003;</span> Filtros e busca</li>
+                <li><span class="check-icon">&#10003;</span> Visualizacao grid e lista</li>
+                <li><span class="check-icon">&#10003;</span> Detalhes do dispositivo</li>
+                <li><span class="check-icon">&#10003;</span> Exportacao CSV</li>
+                <li><span class="check-icon">&#10003;</span> Refresh com animacao</li>
+            </ul>
+            <div class="text-center">
+                <div class="url-display">frontend-xi-livid-19.vercel.app</div>
+                <p class="mt-16" style="font-style:italic; color:var(--primary);">(demo ao vivo neste momento)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 12: Codigo - Qualidade -->
+    <section class="slide">
+        <h2>Qualidade do Codigo</h2>
+        <div class="grid-3 mb-32">
+            <div class="card text-center">
+                <div class="icon-circle" style="background:rgba(1,230,117,0.15);">&#10003;</div>
+                <p class="accent" style="font-size:1.3rem; font-weight:700;">17 testes E2E</p>
+                <p>passando</p>
+            </div>
+            <div class="card text-center">
+                <div class="icon-circle" style="background:rgba(1,230,117,0.15);">&#10003;</div>
+                <p class="accent" style="font-size:1.3rem; font-weight:700;">Zero erros</p>
+                <p>TypeScript</p>
+            </div>
+            <div class="card text-center">
+                <div class="icon-circle" style="background:rgba(1,230,117,0.15);">&#10003;</div>
+                <p class="accent" style="font-size:1.3rem; font-weight:700;">Security headers</p>
+                <p>ativos</p>
+            </div>
+        </div>
+        <div class="content-wrapper" style="max-width:700px;">
+            <h3 class="mb-16">O que garante qualidade:</h3>
+            <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:10px;">
+                <li>&#128204; Commits semanticos (feat, fix, docs, security)</li>
+                <li>&#128204; Validacao de token antes de navegar</li>
+                <li>&#128204; Tratamento de erros em portugues</li>
+                <li>&#128204; Design System fiel ao site Intelbras</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Slide 13: Gestao de Squad -->
+    <section class="slide">
+        <h2>Como eu conduziria isso como PO</h2>
+        <div class="content-wrapper" style="max-width:800px;">
+            <div class="timeline mb-32">
+                <div class="timeline-item">
+                    <h3>Sprint 1: Base funcional</h3>
+                    <p>RF01 a RF05: integracao com a API, listagem e autenticacao</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Sprint 2: Diferenciacao</h3>
+                    <p>RF06 a RF12: dashboard, favoritos, filtros avancados, CSV</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>Sprint 3: Polimento e futuro</h3>
+                    <p>RF13 a RF18: responsividade, acessibilidade, documentacao</p>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="card" style="padding:14px 18px;"><p style="font-size:0.95rem;">&#128197; Refinamento semanal com a squad</p></div>
+                <div class="card" style="padding:14px 18px;"><p style="font-size:0.95rem;">&#127916; Demo a cada sprint para stakeholders</p></div>
+                <div class="card" style="padding:14px 18px;"><p style="font-size:0.95rem;">&#128200; Metricas: velocity, lead time, bug escape rate</p></div>
+                <div class="card" style="padding:14px 18px;"><p style="font-size:0.95rem;">&#128202; Priorizacao baseada em dados, nao opinioes</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 14: Resumo -->
+    <section class="slide">
+        <h2>O que entreguei</h2>
+        <div class="grid-4 mb-32">
+            <div class="card number-card">
+                <div class="icon-circle">&#128196;</div>
+                <span class="number">18</span>
+                <span class="label">Requisitos</span>
+            </div>
+            <div class="card number-card">
+                <div class="icon-circle">&#128187;</div>
+                <span class="number">15</span>
+                <span class="label">Implementados</span>
+            </div>
+            <div class="card number-card">
+                <div class="icon-circle">&#9729;</div>
+                <span class="number">&#8734;</span>
+                <span class="label">Arquitetura Escalavel</span>
+            </div>
+            <div class="card number-card">
+                <div class="icon-circle">&#10003;</div>
+                <span class="number">17</span>
+                <span class="label">Testes Passando</span>
+            </div>
+        </div>
+        <p class="text-center" style="font-size:1.3rem; color:var(--dark-gray); font-weight:600; max-width:700px;">
+            Mais do que codigo, entreguei <span class="accent">pensamento de produto</span>.
+        </p>
+    </section>
+
+    <!-- Slide 15: Encerramento -->
+    <section class="slide slide-end">
+        <img src="../frontend/public/logo-intelbras.png" alt="Intelbras" class="logo mb-32">
+        <h1 style="font-size:3.5rem; margin-bottom:24px;">Obrigado</h1>
+        <p class="subtitle mb-32" style="font-size:1.4rem;">Estou pronto para perguntas.</p>
+        <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+            <div class="url-display" style="font-size:1rem; padding:12px 24px;">
+                github.com/imcempreendimentos/case-intelbras
+            </div>
+            <div class="url-display" style="font-size:1rem; padding:12px 24px;">
+                frontend-xi-livid-19.vercel.app
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+    <button id="prevBtn" aria-label="Slide anterior">&#9664;</button>
+    <span class="counter" id="counter">1 / 15</span>
+    <button id="nextBtn" aria-label="Proximo slide">&#9654;</button>
+</div>
+
+<script>
+    (function() {
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('counter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let current = 0;
+        const total = slides.length;
+
+        function showSlide(index) {
+            slides.forEach(function(slide, i) {
+                slide.classList.remove('active', 'prev');
+                if (i < index) {
+                    slide.classList.add('prev');
+                }
+            });
+            slides[index].classList.add('active');
+            counter.textContent = (index + 1) + ' / ' + total;
+            prevBtn.style.opacity = index === 0 ? '0.3' : '1';
+            nextBtn.style.opacity = index === total - 1 ? '0.3' : '1';
+        }
+
+        function next() {
+            if (current < total - 1) {
+                current++;
+                showSlide(current);
+            }
+        }
+
+        function prev() {
+            if (current > 0) {
+                current--;
+                showSlide(current);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+                e.preventDefault();
+                next();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                prev();
+            }
+        });
+
+        prevBtn.addEventListener('click', prev);
+        nextBtn.addEventListener('click', next);
+
+        showSlide(0);
+    })();
+</script>
+
+</body>
+</html>
