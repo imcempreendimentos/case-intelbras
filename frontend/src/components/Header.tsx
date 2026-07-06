@@ -9,9 +9,11 @@ export default function Header({ onDisconnect }: HeaderProps) {
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-extrabold text-primary">
-              intelbras
-            </h1>
+            <img
+              src="/logo-intelbras.png"
+              alt="Intelbras"
+              className="h-7"
+            />
             <span className="hidden sm:inline text-sm text-medium-gray">
               Gerenciador de Dispositivos
             </span>

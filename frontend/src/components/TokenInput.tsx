@@ -26,10 +26,12 @@ export default function TokenInput({ onConnect }: TokenInputProps) {
       <div className="w-full max-w-md">
         {/* Logo / Brand */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-primary">
-            intelbras
-          </h1>
-          <p className="text-medium-gray mt-2 text-sm">
+          <img
+            src="/logo-intelbras.png"
+            alt="Intelbras"
+            className="h-10 mx-auto"
+          />
+          <p className="text-medium-gray mt-3 text-sm">
             Gerenciador de Dispositivos — Casa Inteligente
           </p>
         </div>
