@@ -60,7 +60,7 @@ export default function App() {
   const [secondsAgo, setSecondsAgo] = useState(0);
 
   // Fetch devices (RF12: polling via refetchInterval in hook)
-  const { data, isLoading, error, refetch, dataUpdatedAt } = useDevices({
+  const { data, isLoading, isFetching, error, refetch, dataUpdatedAt } = useDevices({
     token: isAuthenticated ? token : "",
     pagina,
     tamanhoPagina,
@@ -377,17 +377,18 @@ export default function App() {
               {/* RF12: Last updated indicator + refresh button */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-medium-gray">
-                  Atualizado {formatSecondsAgo(secondsAgo)}
+                  {isFetching ? "Atualizando..." : `Atualizado ${formatSecondsAgo(secondsAgo)}`}
                 </span>
                 <button
                   onClick={handleManualRefresh}
                   className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                   aria-label="Atualizar dados"
                   title="Atualizar dados"
+                  disabled={isFetching}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-medium-gray"
+                    className={`h-4 w-4 text-medium-gray ${isFetching ? "animate-spin" : ""}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
