@@ -105,6 +105,16 @@ export default function App() {
   const isAuthError =
     error?.response?.status === 401 || error?.response?.status === 403;
 
+  // Se erro de autenticação, volta pra tela de token com mensagem
+  if (isAuthError) {
+    return (
+      <TokenInput
+        onConnect={handleConnect}
+        errorMessage={getErrorMessage(error)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-clean-gray">
       <Header onDisconnect={handleDisconnect} />

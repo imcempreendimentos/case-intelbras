@@ -2,11 +2,12 @@ import { useState } from "react";
 
 interface TokenInputProps {
   onConnect: (token: string) => void;
+  errorMessage?: string;
 }
 
-export default function TokenInput({ onConnect }: TokenInputProps) {
+export default function TokenInput({ onConnect, errorMessage }: TokenInputProps) {
   const [token, setToken] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(errorMessage || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
