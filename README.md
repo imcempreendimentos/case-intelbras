@@ -78,10 +78,7 @@ case-intelbras/
 │   │   ├── types/
 │   │   └── App.tsx
 │   └── tailwind.config.ts
-├── tests/e2e.spec.ts
-└── docs/
-    ├── BLOCO_A_PRODUTO_PROCESSO.md
-    └── BLOCO_B_ARQUITETURA_AWS.md
+└── tests/e2e.spec.ts
 ```
 
 ## Decisões Técnicas
