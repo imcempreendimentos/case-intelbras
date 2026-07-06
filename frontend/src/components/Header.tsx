@@ -8,7 +8,11 @@ export default function Header({ onDisconnect }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
-          <div className="flex items-center gap-3">
+          <a
+            href="/"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            aria-label="Ir para página inicial"
+          >
             <img
               src="/logo-intelbras.png"
               alt="Intelbras"
@@ -17,7 +21,7 @@ export default function Header({ onDisconnect }: HeaderProps) {
             <span className="hidden sm:inline text-sm text-medium-gray">
               Gerenciador de Dispositivos
             </span>
-          </div>
+          </a>
 
           {/* Disconnect button */}
           <button
